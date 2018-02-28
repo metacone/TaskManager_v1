@@ -15,6 +15,8 @@ namespace TaskManager_v1
         public Form1()
         {
             InitializeComponent();
+            hWndListManager objWndListManager = new hWndListManager();
+            objWndListManager.Initialize(hWndNameListBox, hWndListBox);
         }
     }
 }
