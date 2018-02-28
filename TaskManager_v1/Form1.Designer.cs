@@ -28,12 +28,45 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.hWndNameListBox = new System.Windows.Forms.ListBox();
+            this.hWndListBox = new System.Windows.Forms.ListBox();
+            this.SuspendLayout();
+            // 
+            // hWndNameListBox
+            // 
+            this.hWndNameListBox.FormattingEnabled = true;
+            this.hWndNameListBox.ItemHeight = 12;
+            this.hWndNameListBox.Location = new System.Drawing.Point(12, 190);
+            this.hWndNameListBox.Name = "hWndNameListBox";
+            this.hWndNameListBox.Size = new System.Drawing.Size(272, 232);
+            this.hWndNameListBox.TabIndex = 0;
+            // 
+            // hWndListBox
+            // 
+            this.hWndListBox.FormattingEnabled = true;
+            this.hWndListBox.ItemHeight = 12;
+            this.hWndListBox.Location = new System.Drawing.Point(294, 190);
+            this.hWndListBox.Name = "hWndListBox";
+            this.hWndListBox.Size = new System.Drawing.Size(100, 232);
+            this.hWndListBox.TabIndex = 1;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(406, 434);
+            this.Controls.Add(this.hWndListBox);
+            this.Controls.Add(this.hWndNameListBox);
+            this.Name = "Form1";
             this.Text = "Form1";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.ListBox hWndNameListBox;
+        private System.Windows.Forms.ListBox hWndListBox;
     }
 }
 
