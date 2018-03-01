@@ -8,11 +8,6 @@ using System.Threading.Tasks;
 
 namespace TaskManager_v1
 {
-    struct hWndList
-    {
-        int hWnd;
-        string Name;
-    }
 
     public class hWndListManager
     {
@@ -20,9 +15,9 @@ namespace TaskManager_v1
         {
             MakeRunninghWndList(objListBox, objhWndBox);
         }
-        private void InsertBox()
+        public void RefreshListBox(System.Windows.Forms.ListBox objListBox, System.Windows.Forms.ListBox objhWndBox)
         {
-
+            MakeRunninghWndList(objListBox, objhWndBox);
         }
         
         protected delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
@@ -34,21 +29,23 @@ namespace TaskManager_v1
         protected static extern bool IsWindowVisible(IntPtr hWnd);
         [DllImport("user32.dll")]
         public static extern int GetParent(int hWnd);
-        
+        [DllImport("user32.dll")]
+        public static extern long GetWindowLong(int hWnd, int nIndex);
+        const int GCL_HMODULE = -16;
 
-
-        private hWndList MakeRunninghWndList(System.Windows.Forms.ListBox objListBox, System.Windows.Forms.ListBox objhWndBox)
+        private void MakeRunninghWndList(System.Windows.Forms.ListBox objListBox, System.Windows.Forms.ListBox objhWndBox)
         {
-            hWndList objhWndList = new hWndList();
             Process[] aProcessList = Process.GetProcesses();
-
-            uint nPID = 0;
+            uint nRunningFlag = 0;
+            
             IntPtr New = IntPtr.Zero;
             foreach(Process nProcess in aProcessList)
             {
-                
-                //GetWindowThreadProcessId(nProcess.Handle);
-                if (nProcess.Id != 0 && nProcess.MainWindowHandle != IntPtr.Zero)
+
+                //윈도우 핸들로 그 윈도우의 스타일을 얻어옴
+                UInt32 nWinstyle = (UInt32)GetWindowLong((int)nProcess.MainWindowHandle, GCL_HMODULE);
+                //해당 윈도우의 캡션이 존재하는지 확인
+                if ((nWinstyle & 0x10000000L) == 0x10000000L && (nWinstyle & 0x00C00000L) == 0x00C00000L)
                 {
                     //EnumTheWindows(nProcess.MainWindowHandle, New);
                     int size = GetWindowTextLength(nProcess.MainWindowHandle);
@@ -56,21 +53,31 @@ namespace TaskManager_v1
                     {
                         if (GetParent((int)nProcess.MainWindowHandle) == 0)
                         {
-                            StringBuilder sb = new StringBuilder(size);
-                            GetWindowText(nProcess.MainWindowHandle, sb, size);
-                            if(objhWndBox.Items.Contains((int)nProcess.MainWindowHandle) == false)
-                            {
-                                objhWndBox.Items.Add((int)nProcess.MainWindowHandle);
-                                objListBox.Items.Add(sb);
+                            StringBuilder shWndName = new StringBuilder(size);
+                            GetWindowText(nProcess.MainWindowHandle, shWndName, size);
+
+                            // Register on List Boxs
+                            if(objhWndBox.Items.Contains(nProcess.MainWindowHandle) == false)
+                            {                                
+                                objhWndBox.Items.Add(nProcess.MainWindowHandle);
+                                objListBox.Items.Add(shWndName);
                             }
-                            Console.WriteLine(sb.ToString());
+
+                            // Running, set BitMap
+                            int index = objhWndBox.Items.IndexOf(nProcess.MainWindowHandle);
+                            nRunningFlag |= (uint)(0x1 << index);
                         }
                     }
-                    Debug.WriteLine(nProcess.ProcessName);
                 }
             }
 
-            return objhWndList;
+
+            if (nRunningFlag != ((0x1 << objListBox.Items.Count) - 1))
+            {
+                objhWndBox.Items.Clear();
+                objListBox.Items.Clear();
+            }
+            return ;
         }
     }
 }
