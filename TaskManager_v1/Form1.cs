@@ -26,10 +26,23 @@ namespace TaskManager_v1
             objTimer.Start();
         }
 
+        delegate void RefreshListBoxDelegate(System.Windows.Forms.ListBox objListBox, System.Windows.Forms.ListBox objhWndBox);
+
         public void OneHdred_ms(object sender, ElapsedEventArgs e)
         {
             hWndListManager objWndListManager = new hWndListManager();
-            objWndListManager.RefreshListBox(hWndNameListBox, hWndListBox);
+
+            if(hWndNameListBox.InvokeRequired == true || hWndListBox.InvokeRequired == true)
+            {
+                RefreshListBoxDelegate ListBoxDelegator = new RefreshListBoxDelegate(objWndListManager.RefreshListBox);
+                this.Invoke(ListBoxDelegator, hWndNameListBox , hWndListBox);
+
+            }
+            else
+            {
+                objWndListManager.RefreshListBox(hWndNameListBox, hWndListBox);
+            }
+            
         }
     }
 }
